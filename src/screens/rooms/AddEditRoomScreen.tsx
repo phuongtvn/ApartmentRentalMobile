@@ -6,9 +6,12 @@ import {
   Platform,
   Alert,
 } from 'react-native';
-import { ScreenContainer, Input, Button, ErrorMessage } from '../../components/ui';
+import { ScreenContainer, Input, Button, ErrorMessage, LookupInput } from '../../components/ui';
 import { DatabaseService } from '../../services/database.service';
 import { AuthService } from '../../services/auth.service';
+import type { Database } from '../../types/database.types';
+
+type Building = Database['public']['Tables']['buildings']['Row'];
 
 interface AddEditRoomScreenProps {
   route?: any;
@@ -27,6 +30,8 @@ export const AddEditRoomScreen: React.FC<AddEditRoomScreenProps> = ({
   const [error, setError] = useState('');
   const [clientId, setClientId] = useState('');
   
+  const [selectedBuilding, setSelectedBuilding] = useState<Building | undefined>();
+  const [buildings, setBuildings] = useState<Building[]>([]);
   const [roomNumber, setRoomNumber] = useState('');
   const [floorNumber, setFloorNumber] = useState('');
   const [roomType, setRoomType] = useState('1bedroom');
@@ -52,6 +57,22 @@ export const AddEditRoomScreen: React.FC<AddEditRoomScreenProps> = ({
       const { data } = await DatabaseService.getUserProfile(user.id);
       if (data) {
         setClientId(data.client_id);
+        await loadBuildings(data.client_id);
+      }
+    }
+  };
+
+  const loadBuildings = async (clientIdParam: string) => {
+    const { data, error: buildingsError } = await DatabaseService.getBuildings(clientIdParam);
+    if (!buildingsError && data) {
+      setBuildings(data);
+      
+      // If buildingId is passed from navigation, pre-select it
+      if (buildingId && !isEdit) {
+        const building = data.find(b => b.id === buildingId);
+        if (building) {
+          setSelectedBuilding(building);
+        }
       }
     }
   };
@@ -75,11 +96,18 @@ export const AddEditRoomScreen: React.FC<AddEditRoomScreenProps> = ({
     setRentAmount(data.rent_amount.toString());
     setDepositAmount(data.deposit_amount?.toString() || '');
     setCurrency(data.currency);
+    
+    // Load building for this room
+    const { data: buildingData } = await DatabaseService.getBuildingById(data.building_id);
+    if (buildingData) {
+      setSelectedBuilding(buildingData);
+    }
+    
     setLoading(false);
   };
 
   const handleSubmit = async () => {
-    if (!roomNumber || !bedrooms || !bathrooms || !rentAmount) {
+    if (!roomNumber || !bedrooms || !bathrooms || !rentAmount || !selectedBuilding) {
       setError('Please fill in all required fields');
       return;
     }
@@ -89,7 +117,7 @@ export const AddEditRoomScreen: React.FC<AddEditRoomScreenProps> = ({
 
     const roomData = {
       client_id: clientId,
-      building_id: isEdit ? undefined : buildingId,
+      building_id: selectedBuilding.id,
       room_number: roomNumber,
       floor_number: floorNumber ? parseInt(floorNumber, 10) : null,
       room_type: roomType as any,
@@ -140,6 +168,19 @@ export const AddEditRoomScreen: React.FC<AddEditRoomScreenProps> = ({
         <Text style={styles.title}>{isEdit ? 'Edit Room' : 'Add New Room'}</Text>
 
         {error && <ErrorMessage message={error} />}
+
+        <LookupInput
+          label="Building *"
+          placeholder="Select a building"
+          value={selectedBuilding}
+          data={buildings}
+          onSelect={(building) => setSelectedBuilding(building)}
+          displayField="name"
+          secondaryField={(building) => `${building.address}, ${building.city}`}
+          searchPlaceholder="Search buildings..."
+          emptyMessage="No buildings found. Please create a building first."
+          disabled={isEdit}
+        />
 
         <Input
           label="Room Number *"
