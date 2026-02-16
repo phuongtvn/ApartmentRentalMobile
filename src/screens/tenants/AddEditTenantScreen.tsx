@@ -43,50 +43,45 @@ export const AddEditTenantScreen: React.FC<AddEditTenantScreenProps> = ({
   const [notes, setNotes] = useState('');
 
   useEffect(() => {
-    if (!userClientId) {
-      loadUserProfile();
-    }
-    if (isEdit) {
-      loadTenantData();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const loadUserProfile = async () => {
-    const user = await AuthService.getCurrentUser();
-    if (user) {
-      const { data } = await DatabaseService.getUserProfile(user.id);
-      if (data) {
-        setUserClientId(data.client_id);
+    const loadData = async () => {
+      if (!userClientId) {
+        const user = await AuthService.getCurrentUser();
+        if (user) {
+          const { data } = await DatabaseService.getUserProfile(user.id);
+          if (data) {
+            setUserClientId(data.client_id);
+          }
+        }
       }
-    }
-  };
+      if (isEdit && tenantId) {
+        setLoading(true);
+        const { data, error: fetchError } = await DatabaseService.getTenantById(tenantId);
+        if (fetchError || !data) {
+          setError('Failed to load tenant data');
+          setLoading(false);
+          return;
+        }
 
-  const loadTenantData = async () => {
-    setLoading(true);
-    const { data, error: fetchError } = await DatabaseService.getTenantById(tenantId);
-    if (fetchError || !data) {
-      setError('Failed to load tenant data');
-      setLoading(false);
-      return;
-    }
+        setFirstName(data.first_name);
+        setLastName(data.last_name);
+        setEmail(data.email || '');
+        setPhone(data.phone);
+        setDateOfBirth(data.date_of_birth || '');
+        setNationalId(data.national_id || '');
+        setEmergencyContactName(data.emergency_contact_name || '');
+        setEmergencyContactPhone(data.emergency_contact_phone || '');
+        setCurrentAddress(data.current_address || '');
+        setOccupation(data.occupation || '');
+        setEmployer(data.employer || '');
+        setMonthlyIncome(data.monthly_income?.toString() || '');
+        setNotes(data.notes || '');
 
-    setFirstName(data.first_name);
-    setLastName(data.last_name);
-    setEmail(data.email || '');
-    setPhone(data.phone);
-    setDateOfBirth(data.date_of_birth || '');
-    setNationalId(data.national_id || '');
-    setEmergencyContactName(data.emergency_contact_name || '');
-    setEmergencyContactPhone(data.emergency_contact_phone || '');
-    setCurrentAddress(data.current_address || '');
-    setOccupation(data.occupation || '');
-    setEmployer(data.employer || '');
-    setMonthlyIncome(data.monthly_income?.toString() || '');
-    setNotes(data.notes || '');
+        setLoading(false);
+      }
+    };
 
-    setLoading(false);
-  };
+    loadData();
+  }, [isEdit, tenantId, userClientId]);
 
   const validateForm = () => {
     if (!firstName.trim()) {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -28,12 +28,7 @@ export const TenantDetailsScreen: React.FC<TenantDetailsScreenProps> = ({
   const [tenant, setTenant] = useState<Tenant | null>(null);
   const [leases, setLeases] = useState<any[]>([]);
 
-  useEffect(() => {
-    loadTenantDetails();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tenantId]);
-
-  const loadTenantDetails = async () => {
+  const loadTenantDetails = useCallback(async () => {
     try {
       const { data, error: fetchError } = await DatabaseService.getTenantById(tenantId);
       if (fetchError || !data) {
@@ -53,7 +48,11 @@ export const TenantDetailsScreen: React.FC<TenantDetailsScreenProps> = ({
       setError(err.message || 'An error occurred');
       setLoading(false);
     }
-  };
+  }, [tenantId]);
+
+  useEffect(() => {
+    loadTenantDetails();
+  }, [loadTenantDetails]);
 
   const handleDelete = () => {
     Alert.alert(
