@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import {
-  View,
   Text,
   StyleSheet,
   KeyboardAvoidingView,
   Platform,
   Alert,
-  ScrollView,
 } from 'react-native';
 import { ScreenContainer, Input, Button, ErrorMessage } from '../../components/ui';
 import { DatabaseService } from '../../services/database.service';
@@ -45,6 +43,7 @@ export const AddEditBuildingScreen: React.FC<AddEditBuildingScreenProps> = ({
     if (isEdit) {
       loadBuildingData();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const loadUserProfile = async () => {

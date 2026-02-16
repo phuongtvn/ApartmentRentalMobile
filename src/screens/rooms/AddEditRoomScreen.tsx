@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import {
-  View,
   Text,
   StyleSheet,
   KeyboardAvoidingView,
@@ -44,6 +43,7 @@ export const AddEditRoomScreen: React.FC<AddEditRoomScreenProps> = ({
     if (isEdit) {
       loadRoomData();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const loadUserProfile = async () => {

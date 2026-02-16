@@ -4,7 +4,6 @@ import {
   Text,
   StyleSheet,
   Alert,
-  ScrollView,
 } from 'react-native';
 import { ScreenContainer, Card, Button, Loading, ErrorMessage } from '../../components/ui';
 import { DatabaseService } from '../../services/database.service';
@@ -25,6 +24,7 @@ export const RoomDetailsScreen: React.FC<RoomDetailsScreenProps> = ({
 
   useEffect(() => {
     loadRoomDetails();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [roomId]);
 
   const loadRoomDetails = async () => {
@@ -142,7 +142,14 @@ export const RoomDetailsScreen: React.FC<RoomDetailsScreenProps> = ({
         </View>
         <View style={styles.detailRow}>
           <Text style={styles.label}>Status:</Text>
-          <Text style={[styles.value, styles.statusBadge, styles[`status_${room.status}`]]}>
+          <Text style={[
+            styles.value,
+            styles.statusBadge,
+            room.status === 'available' && styles.status_available,
+            room.status === 'occupied' && styles.status_occupied,
+            room.status === 'maintenance' && styles.status_maintenance,
+            room.status === 'reserved' && styles.status_reserved,
+          ]}>
             {room.status}
           </Text>
         </View>

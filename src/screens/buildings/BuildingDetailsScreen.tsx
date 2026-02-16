@@ -3,7 +3,6 @@ import {
   View,
   Text,
   StyleSheet,
-  ScrollView,
   Alert,
   TouchableOpacity,
 } from 'react-native';
@@ -27,6 +26,7 @@ export const BuildingDetailsScreen: React.FC<BuildingDetailsScreenProps> = ({
 
   useEffect(() => {
     loadBuildingDetails();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [buildingId]);
 
   const loadBuildingDetails = async () => {
@@ -68,8 +68,8 @@ export const BuildingDetailsScreen: React.FC<BuildingDetailsScreenProps> = ({
           text: 'Delete',
           style: 'destructive',
           onPress: async () => {
-            const { error } = await DatabaseService.deleteBuilding(buildingId);
-            if (error) {
+            const { error: deleteError } = await DatabaseService.deleteBuilding(buildingId);
+            if (deleteError) {
               Alert.alert('Error', 'Failed to delete building');
             } else {
               navigation.goBack();
@@ -187,7 +187,13 @@ export const BuildingDetailsScreen: React.FC<BuildingDetailsScreenProps> = ({
               <Card>
                 <View style={styles.roomHeader}>
                   <Text style={styles.roomNumber}>Room {room.room_number}</Text>
-                  <Text style={[styles.roomStatus, styles[`status_${room.status}`]]}>
+                  <Text style={[
+                    styles.roomStatus,
+                    room.status === 'available' && styles.status_available,
+                    room.status === 'occupied' && styles.status_occupied,
+                    room.status === 'maintenance' && styles.status_maintenance,
+                    room.status === 'reserved' && styles.status_reserved,
+                  ]}>
                     {room.status}
                   </Text>
                 </View>
