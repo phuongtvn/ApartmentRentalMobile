@@ -2,8 +2,6 @@ import { supabase } from '../config/supabase';
 import type { Database } from '../types/database.types';
 
 type Tables = Database['public']['Tables'];
-type Building = Tables['buildings']['Row'];
-type Room = Tables['rooms']['Row'];
 type BuildingInsert = Tables['buildings']['Insert'];
 type RoomInsert = Tables['rooms']['Insert'];
 

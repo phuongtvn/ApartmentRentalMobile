@@ -12,8 +12,6 @@ import {
   View,
   useColorScheme,
 } from 'react-native';
-import { GluestackUIProvider } from '@gluestack-ui/themed';
-import { config } from './src/config/gluestack-ui.config';
 
 function App(): React.JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
@@ -24,40 +22,40 @@ function App(): React.JSX.Element {
   };
 
   return (
-    <GluestackUIProvider config={config}>
-      <SafeAreaView style={backgroundStyle}>
-        <StatusBar
-          barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-          backgroundColor={backgroundStyle.backgroundColor}
-        />
-        <View style={styles.container}>
-          <Text style={[styles.title, { color: isDarkMode ? '#ffffff' : '#000000' }]}>
-            🏢 Apartment Rental Management
+    <SafeAreaView style={backgroundStyle}>
+      <StatusBar
+        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
+        backgroundColor={backgroundStyle.backgroundColor}
+      />
+      <View style={styles.container}>
+        <Text style={[styles.title, { color: isDarkMode ? '#ffffff' : '#000000' }]}>
+          🏢 Apartment Rental Management
+        </Text>
+        <Text style={[styles.subtitle, { color: isDarkMode ? '#cccccc' : '#666666' }]}>
+          Welcome to your property management solution
+        </Text>
+        <View style={styles.statusContainer}>
+          <Text style={[styles.statusText, { color: isDarkMode ? '#90caf9' : '#1976d2' }]}>
+            ✓ React Native configured
           </Text>
-          <Text style={[styles.subtitle, { color: isDarkMode ? '#cccccc' : '#666666' }]}>
-            Welcome to your property management solution
+          <Text style={[styles.statusText, { color: isDarkMode ? '#90caf9' : '#1976d2' }]}>
+            ✓ TypeScript enabled
           </Text>
-          <View style={styles.statusContainer}>
-            <Text style={[styles.statusText, { color: isDarkMode ? '#90caf9' : '#1976d2' }]}>
-              ✓ React Native configured
-            </Text>
-            <Text style={[styles.statusText, { color: isDarkMode ? '#90caf9' : '#1976d2' }]}>
-              ✓ TypeScript enabled
-            </Text>
-            <Text style={[styles.statusText, { color: isDarkMode ? '#90caf9' : '#1976d2' }]}>
-              ✓ Gluestack UI ready
-            </Text>
-            <Text style={[styles.statusText, { color: isDarkMode ? '#90caf9' : '#1976d2' }]}>
-              ✓ Supabase configured
-            </Text>
-          </View>
-          <Text style={[styles.instructions, { color: isDarkMode ? '#999999' : '#888888' }]}>
-            Please configure your Supabase credentials in .env file{'\n'}
-            Then install dependencies: npm install
+          <Text style={[styles.statusText, { color: isDarkMode ? '#90caf9' : '#1976d2' }]}>
+            ✓ Project structure ready
+          </Text>
+          <Text style={[styles.statusText, { color: isDarkMode ? '#90caf9' : '#1976d2' }]}>
+            ✓ Supabase configured
           </Text>
         </View>
-      </SafeAreaView>
-    </GluestackUIProvider>
+        <Text style={[styles.instructions, { color: isDarkMode ? '#999999' : '#888888' }]}>
+          Next steps:{'\n'}
+          1. Configure Supabase credentials in src/config/supabase.ts{'\n'}
+          2. Install dependencies: npm install --legacy-peer-deps{'\n'}
+          3. Run: npm run android or npm run ios
+        </Text>
+      </View>
+    </SafeAreaView>
   );
 }
 

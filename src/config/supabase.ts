@@ -2,13 +2,23 @@ import 'react-native-url-polyfill/auto';
 import { createClient } from '@supabase/supabase-js';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-// Environment variables (in production, use react-native-config or similar)
-const SUPABASE_URL = process.env.SUPABASE_URL || '';
-const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY || '';
+/**
+ * Supabase Configuration
+ * 
+ * IMPORTANT: In production, use react-native-config or similar to manage environment variables
+ * For now, we'll define placeholder values that should be replaced
+ */
+
+// TODO: Replace these with your actual Supabase credentials
+// Option 1: Use react-native-config and process.env
+// Option 2: Create a separate config file not tracked by git
+// Option 3: Use a build-time configuration system
+const SUPABASE_URL = '';  // Replace with your Supabase URL
+const SUPABASE_ANON_KEY = '';  // Replace with your Supabase Anon Key
 
 if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
   console.warn(
-    'Supabase URL and Anon Key are required. Please set them in your .env file.'
+    '⚠️ Supabase credentials not configured. Please set SUPABASE_URL and SUPABASE_ANON_KEY in src/config/supabase.ts'
   );
 }
 
