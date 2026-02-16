@@ -69,7 +69,7 @@ This implementation adds comprehensive tenant and lease management functionality
 ### 3. Database Service Enhancements (`src/services/database.service.ts`)
 
 #### New Tenant Methods
-- `getTenants(clientId)` - Get all tenants (updated to include all statuses)
+- `getTenants(clientId, status?)` - Get all tenants (optionally filtered by status: 'active', 'inactive', 'blacklisted')
 - `getTenantById(id)` - Get a specific tenant by ID
 - `createTenant(tenant)` - Create a new tenant record
 - `updateTenant(id, updates)` - Update tenant information

@@ -63,7 +63,7 @@ export const AddEditContractScreen: React.FC<AddEditContractScreenProps> = ({
   };
 
   const loadTenants = async (clientIdParam: string) => {
-    const { data, error: tenantsError } = await DatabaseService.getTenants(clientIdParam);
+    const { data, error: tenantsError } = await DatabaseService.getTenants(clientIdParam, 'active');
     if (!tenantsError && data) {
       setTenants(data);
     }

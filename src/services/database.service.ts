@@ -323,13 +323,18 @@ export class DatabaseService {
   /**
    * Tenants
    */
-  static async getTenants(clientId: string) {
+  static async getTenants(clientId: string, status?: 'active' | 'inactive' | 'blacklisted') {
     try {
-      const { data, error } = await supabase
+      let query = supabase
         .from('tenants')
         .select('*')
-        .eq('client_id', clientId)
-        .order('first_name', { ascending: true });
+        .eq('client_id', clientId);
+
+      if (status) {
+        query = query.eq('status', status);
+      }
+
+      const { data, error } = await query.order('first_name', { ascending: true });
 
       if (error) throw error;
       return { data, error: null };
