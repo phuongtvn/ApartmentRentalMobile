@@ -131,6 +131,7 @@ export const AddEditTenantScreen: React.FC<AddEditTenantScreenProps> = ({
       occupation: occupation.trim() || null,
       employer: employer.trim() || null,
       monthly_income: monthlyIncome ? parseFloat(monthlyIncome) : null,
+      profile_image_url: null,
       status: 'active' as const,
       notes: notes.trim() || null,
     };
