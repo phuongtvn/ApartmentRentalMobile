@@ -107,6 +107,7 @@ export const AddEditRoomScreen: React.FC<AddEditRoomScreenProps> = ({
   };
 
   const handleSubmit = async () => {
+    // Validate required fields
     if (!roomNumber || !bedrooms || !bathrooms || !rentAmount || !selectedBuilding) {
       setError('Please fill in all required fields');
       return;
@@ -179,6 +180,8 @@ export const AddEditRoomScreen: React.FC<AddEditRoomScreenProps> = ({
           secondaryField={(building) => `${building.address}, ${building.city}`}
           searchPlaceholder="Search buildings..."
           emptyMessage="No buildings found. Please create a building first."
+          // Disabled in edit mode to prevent changing the building-room association
+          // This maintains referential integrity in the one-to-many relationship
           disabled={isEdit}
         />
 

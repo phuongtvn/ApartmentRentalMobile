@@ -91,6 +91,9 @@ export function LookupInput<T extends ListViewItem>({
           style={styles.lookupButton}
           onPress={() => !disabled && setModalVisible(true)}
           disabled={disabled}
+          accessibilityLabel="Open lookup to select item"
+          accessibilityHint="Opens a searchable list to select an item"
+          accessibilityRole="button"
         >
           <Text style={styles.lookupIcon}>🔍</Text>
         </TouchableOpacity>
@@ -99,6 +102,9 @@ export function LookupInput<T extends ListViewItem>({
           <TouchableOpacity
             style={styles.clearButton}
             onPress={handleClear}
+            accessibilityLabel="Clear selection"
+            accessibilityHint="Removes the currently selected item"
+            accessibilityRole="button"
           >
             <Text style={styles.clearIcon}>✕</Text>
           </TouchableOpacity>
