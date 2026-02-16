@@ -105,6 +105,53 @@ export interface Database {
         Insert: Omit<Database['public']['Tables']['users']['Row'], 'created_at' | 'updated_at'>;
         Update: Partial<Database['public']['Tables']['users']['Insert']>;
       };
+      leases: {
+        Row: {
+          id: string;
+          client_id: string;
+          room_id: string;
+          tenant_id: string;
+          lease_number: string | null;
+          start_date: string;
+          end_date: string;
+          rent_amount: number;
+          deposit_amount: number | null;
+          payment_due_day: number;
+          payment_frequency: 'weekly' | 'biweekly' | 'monthly' | 'quarterly' | 'yearly';
+          contract_url: string | null;
+          status: 'draft' | 'active' | 'expired' | 'terminated' | 'renewed';
+          notes: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: Omit<Database['public']['Tables']['leases']['Row'], 'id' | 'created_at' | 'updated_at'>;
+        Update: Partial<Database['public']['Tables']['leases']['Insert']>;
+      };
+      tenants: {
+        Row: {
+          id: string;
+          client_id: string;
+          first_name: string;
+          last_name: string;
+          email: string | null;
+          phone: string;
+          date_of_birth: string | null;
+          national_id: string | null;
+          emergency_contact_name: string | null;
+          emergency_contact_phone: string | null;
+          current_address: string | null;
+          occupation: string | null;
+          employer: string | null;
+          monthly_income: number | null;
+          profile_image_url: string | null;
+          status: 'active' | 'inactive' | 'blacklisted';
+          notes: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: Omit<Database['public']['Tables']['tenants']['Row'], 'id' | 'created_at' | 'updated_at'>;
+        Update: Partial<Database['public']['Tables']['tenants']['Insert']>;
+      };
     };
     Views: {
       available_rooms_view: {

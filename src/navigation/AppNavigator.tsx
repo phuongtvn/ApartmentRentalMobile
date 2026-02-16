@@ -11,6 +11,7 @@ import { LoginScreen, SignUpScreen, ForgotPasswordScreen } from '../screens/auth
 import { HomeScreen } from '../screens/home';
 import { BuildingDetailsScreen, AddEditBuildingScreen } from '../screens/buildings';
 import { RoomDetailsScreen, AddEditRoomScreen } from '../screens/rooms';
+import { ContractDetailsScreen, AddEditContractScreen } from '../screens/contracts';
 
 const Stack = createNativeStackNavigator();
 
@@ -72,6 +73,21 @@ const MainStack = () => (
       name="EditRoom"
       component={AddEditRoomScreen}
       options={{ title: 'Edit Room' }}
+    />
+    <Stack.Screen
+      name="ContractDetails"
+      component={ContractDetailsScreen}
+      options={{ title: 'Contract Details' }}
+    />
+    <Stack.Screen
+      name="AddContract"
+      component={AddEditContractScreen}
+      options={{ title: 'Add Contract' }}
+    />
+    <Stack.Screen
+      name="EditContract"
+      component={AddEditContractScreen}
+      options={{ title: 'Edit Contract' }}
     />
   </Stack.Navigator>
 );

@@ -64,6 +64,9 @@ A comprehensive multi-tenant apartment and property management mobile applicatio
 - Track lease start and end dates
 - Alert on upcoming lease expirations
 - Record lease terms and conditions
+- **Only one active contract per room at any time**
+- Access contract directly from room details screen
+- Contract includes tenant, rent amount, deposit, payment schedule, and notes
 
 ### 6. Payment Tracking
 - Record rent payments
@@ -127,6 +130,9 @@ A comprehensive multi-tenant apartment and property management mobile applicatio
 - End date must be after start date
 - Only one active lease per unit at a time
 - Lease terms must include rent amount
+- **Only one active or draft contract per room is enforced at the database level**
+- **Contract can be created directly from the room details screen**
+- **Room can only have a new contract when no active/draft contract exists**
 
 ### Payment Rules
 - Payments must be linked to a lease

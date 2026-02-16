@@ -21,6 +21,7 @@ export const RoomDetailsScreen: React.FC<RoomDetailsScreenProps> = ({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [room, setRoom] = useState<any>(null);
+  const [contract, setContract] = useState<any>(null);
 
   useEffect(() => {
     loadRoomDetails();
@@ -38,6 +39,10 @@ export const RoomDetailsScreen: React.FC<RoomDetailsScreenProps> = ({
 
       setRoom(data);
       setLoading(false);
+
+      // Load contract for this room
+      const { data: contractData } = await DatabaseService.getContractByRoom(roomId);
+      setContract(contractData);
     } catch (err: any) {
       setError(err.message || 'An error occurred');
       setLoading(false);
@@ -188,6 +193,51 @@ export const RoomDetailsScreen: React.FC<RoomDetailsScreenProps> = ({
       </Card>
 
       <Card>
+        <Text style={styles.sectionTitle}>Contract</Text>
+        {contract ? (
+          <>
+            <View style={styles.detailRow}>
+              <Text style={styles.label}>Lease #:</Text>
+              <Text style={styles.value}>{contract.lease_number || 'N/A'}</Text>
+            </View>
+            <View style={styles.detailRow}>
+              <Text style={styles.label}>Status:</Text>
+              <Text style={[
+                styles.value,
+                styles.statusBadge,
+                contract.status === 'active' && styles.status_available,
+                contract.status === 'draft' && styles.status_reserved,
+              ]}>
+                {contract.status}
+              </Text>
+            </View>
+            <View style={styles.detailRow}>
+              <Text style={styles.label}>Period:</Text>
+              <Text style={styles.value}>
+                {new Date(contract.start_date).toLocaleDateString()} - {new Date(contract.end_date).toLocaleDateString()}
+              </Text>
+            </View>
+            <Button
+              title="View Contract Details"
+              onPress={() => navigation.navigate('ContractDetails', { contractId: contract.id, roomId })}
+              size="small"
+              style={styles.contractButton}
+            />
+          </>
+        ) : (
+          <>
+            <Text style={styles.emptyContract}>No active contract for this room</Text>
+            <Button
+              title="+ Add Contract"
+              onPress={() => navigation.navigate('AddContract', { roomId })}
+              size="small"
+              style={styles.contractButton}
+            />
+          </>
+        )}
+      </Card>
+
+      <Card>
         <Text style={styles.sectionTitle}>Update Status</Text>
         <View style={styles.statusButtons}>
           <Button
@@ -301,5 +351,14 @@ const styles = StyleSheet.create({
   statusButton: {
     flex: 1,
     minWidth: '45%',
+  },
+  contractButton: {
+    marginTop: 12,
+  },
+  emptyContract: {
+    fontSize: 14,
+    color: '#999999',
+    textAlign: 'center',
+    marginBottom: 4,
   },
 });
