@@ -12,6 +12,8 @@ import { HomeScreen } from '../screens/home';
 import { BuildingDetailsScreen, AddEditBuildingScreen } from '../screens/buildings';
 import { RoomDetailsScreen, AddEditRoomScreen } from '../screens/rooms';
 import { ContractDetailsScreen, AddEditContractScreen } from '../screens/contracts';
+import { TenantsListScreen, TenantDetailsScreen, AddEditTenantScreen } from '../screens/tenants';
+import { LeasesListScreen } from '../screens/leases';
 
 const Stack = createNativeStackNavigator();
 
@@ -88,6 +90,31 @@ const MainStack = () => (
       name="EditContract"
       component={AddEditContractScreen}
       options={{ title: 'Edit Contract' }}
+    />
+    <Stack.Screen
+      name="TenantsList"
+      component={TenantsListScreen}
+      options={{ title: 'Tenants' }}
+    />
+    <Stack.Screen
+      name="TenantDetails"
+      component={TenantDetailsScreen}
+      options={{ title: 'Tenant Details' }}
+    />
+    <Stack.Screen
+      name="AddTenant"
+      component={AddEditTenantScreen}
+      options={{ title: 'Add Tenant' }}
+    />
+    <Stack.Screen
+      name="EditTenant"
+      component={AddEditTenantScreen}
+      options={{ title: 'Edit Tenant' }}
+    />
+    <Stack.Screen
+      name="LeasesList"
+      component={LeasesListScreen}
+      options={{ title: 'Leases' }}
     />
   </Stack.Navigator>
 );
