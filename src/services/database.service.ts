@@ -4,6 +4,7 @@ import type { Database } from '../types/database.types';
 type Tables = Database['public']['Tables'];
 type BuildingInsert = Tables['buildings']['Insert'];
 type RoomInsert = Tables['rooms']['Insert'];
+type LeaseInsert = Tables['leases']['Insert'];
 
 /**
  * Database Service
@@ -230,6 +231,110 @@ export class DatabaseService {
       return { data, error: null };
     } catch (error) {
       console.error('Error creating user profile:', error);
+      return { data: null, error };
+    }
+  }
+
+  /**
+   * Contracts (Leases)
+   */
+  static async getContractByRoom(roomId: string) {
+    try {
+      const { data, error } = await supabase
+        .from('leases')
+        .select('*')
+        .eq('room_id', roomId)
+        .in('status', ['active', 'draft'])
+        .single();
+
+      if (error && error.code !== 'PGRST116') throw error;
+      return { data: data || null, error: null };
+    } catch (error) {
+      console.error('Error fetching contract:', error);
+      return { data: null, error };
+    }
+  }
+
+  static async getContractById(id: string) {
+    try {
+      const { data, error } = await supabase
+        .from('leases')
+        .select('*')
+        .eq('id', id)
+        .single();
+
+      if (error) throw error;
+      return { data, error: null };
+    } catch (error) {
+      console.error('Error fetching contract:', error);
+      return { data: null, error };
+    }
+  }
+
+  static async createContract(contract: LeaseInsert) {
+    try {
+      const { data, error } = await supabase
+        .from('leases')
+        .insert(contract)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return { data, error: null };
+    } catch (error) {
+      console.error('Error creating contract:', error);
+      return { data: null, error };
+    }
+  }
+
+  static async updateContract(id: string, updates: Partial<LeaseInsert>) {
+    try {
+      const { data, error } = await supabase
+        .from('leases')
+        .update(updates)
+        .eq('id', id)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return { data, error: null };
+    } catch (error) {
+      console.error('Error updating contract:', error);
+      return { data: null, error };
+    }
+  }
+
+  static async deleteContract(id: string) {
+    try {
+      const { error } = await supabase
+        .from('leases')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+      return { error: null };
+    } catch (error) {
+      console.error('Error deleting contract:', error);
+      return { error };
+    }
+  }
+
+  /**
+   * Tenants
+   */
+  static async getTenants(clientId: string) {
+    try {
+      const { data, error } = await supabase
+        .from('tenants')
+        .select('*')
+        .eq('client_id', clientId)
+        .eq('status', 'active')
+        .order('first_name', { ascending: true });
+
+      if (error) throw error;
+      return { data, error: null };
+    } catch (error) {
+      console.error('Error fetching tenants:', error);
       return { data: null, error };
     }
   }
