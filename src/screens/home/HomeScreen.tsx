@@ -6,6 +6,7 @@ import {
   FlatList,
   TouchableOpacity,
   RefreshControl,
+  ScrollView,
 } from 'react-native';
 import { ScreenContainer, Card, Button, Loading, ErrorMessage } from '../../components/ui';
 import { AuthService } from '../../services/auth.service';
@@ -81,41 +82,65 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
 
   return (
     <ScreenContainer>
-      <View style={styles.header}>
-        <View>
-          <Text style={styles.greeting}>
-            Welcome back, {userProfile?.full_name || 'User'}!
-          </Text>
-          <Text style={styles.role}>Role: {userProfile?.role || 'N/A'}</Text>
-        </View>
-        <Button title="Logout" onPress={handleLogout} size="small" variant="outline" />
-      </View>
-
-      {error && <ErrorMessage message={error} />}
-
-      <View style={styles.section}>
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>My Buildings</Text>
-          <Button
-            title="+ Add"
-            onPress={() => navigation.navigate('AddBuilding')}
-            size="small"
-          />
-        </View>
-
-        {buildings.length === 0 ? (
-          <Card>
-            <Text style={styles.emptyText}>No buildings yet</Text>
-            <Text style={styles.emptySubtext}>
-              Tap the "+ Add" button to create your first building
+      <ScrollView 
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
+        }
+      >
+        <View style={styles.header}>
+          <View>
+            <Text style={styles.greeting}>
+              Welcome back, {userProfile?.full_name || 'User'}!
             </Text>
-          </Card>
-        ) : (
-          <FlatList
-            data={buildings}
-            keyExtractor={(item) => item.id}
-            renderItem={({ item }) => (
-              <TouchableOpacity onPress={() => navigateToBuilding(item.id)}>
+            <Text style={styles.role}>Role: {userProfile?.role || 'N/A'}</Text>
+          </View>
+          <Button title="Logout" onPress={handleLogout} size="small" variant="outline" />
+        </View>
+
+        {error && <ErrorMessage message={error} />}
+
+        {/* Quick Access Cards */}
+        <View style={styles.quickAccess}>
+          <Text style={styles.sectionTitle}>Quick Access</Text>
+          <View style={styles.quickAccessGrid}>
+            <TouchableOpacity 
+              style={styles.quickAccessCard}
+              onPress={() => navigation.navigate('TenantsList')}
+            >
+              <Text style={styles.quickAccessIcon}>👤</Text>
+              <Text style={styles.quickAccessLabel}>Tenants</Text>
+            </TouchableOpacity>
+            <TouchableOpacity 
+              style={styles.quickAccessCard}
+              onPress={() => navigation.navigate('LeasesList')}
+            >
+              <Text style={styles.quickAccessIcon}>📄</Text>
+              <Text style={styles.quickAccessLabel}>Leases</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        <View style={styles.section}>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>My Buildings</Text>
+            <Button
+              title="+ Add"
+              onPress={() => navigation.navigate('AddBuilding')}
+              size="small"
+            />
+          </View>
+
+          {buildings.length === 0 ? (
+            <Card>
+              <Text style={styles.emptyText}>No buildings yet</Text>
+              <Text style={styles.emptySubtext}>
+                Tap the "+ Add" button to create your first building
+              </Text>
+            </Card>
+          ) : (
+            buildings.map((item) => (
+              <TouchableOpacity key={item.id} onPress={() => navigateToBuilding(item.id)}>
                 <Card>
                   <Text style={styles.buildingName}>{item.name}</Text>
                   <Text style={styles.buildingAddress}>
@@ -134,13 +159,10 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
                   </View>
                 </Card>
               </TouchableOpacity>
-            )}
-            refreshControl={
-              <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
-            }
-          />
-        )}
-      </View>
+            ))
+          )}
+        </View>
+      </ScrollView>
     </ScreenContainer>
   );
 };
@@ -165,8 +187,36 @@ const styles = StyleSheet.create({
     color: '#666666',
     marginTop: 4,
   },
-  section: {
+  quickAccess: {
+    marginBottom: 24,
+  },
+  quickAccessGrid: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  quickAccessCard: {
     flex: 1,
+    backgroundColor: '#FFFFFF',
+    padding: 20,
+    borderRadius: 12,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  quickAccessIcon: {
+    fontSize: 36,
+    marginBottom: 8,
+  },
+  quickAccessLabel: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#333333',
+  },
+  section: {
+    marginBottom: 24,
   },
   sectionHeader: {
     flexDirection: 'row',

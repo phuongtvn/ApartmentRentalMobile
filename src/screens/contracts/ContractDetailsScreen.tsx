@@ -22,6 +22,7 @@ export const ContractDetailsScreen: React.FC<ContractDetailsScreenProps> = ({
   const [error, setError] = useState('');
   const [contract, setContract] = useState<any>(null);
   const [room, setRoom] = useState<any>(null);
+  const [tenant, setTenant] = useState<any>(null);
 
   useEffect(() => {
     loadContractDetails();
@@ -42,6 +43,11 @@ export const ContractDetailsScreen: React.FC<ContractDetailsScreenProps> = ({
       const { data: roomData } = await DatabaseService.getRoomById(data.room_id);
       if (roomData) {
         setRoom(roomData);
+      }
+
+      const { data: tenantData } = await DatabaseService.getTenantById(data.tenant_id);
+      if (tenantData) {
+        setTenant(tenantData);
       }
 
       setLoading(false);
@@ -120,6 +126,35 @@ export const ContractDetailsScreen: React.FC<ContractDetailsScreenProps> = ({
       </View>
 
       {error && <ErrorMessage message={error} />}
+
+      {tenant && (
+        <Card>
+          <Text style={styles.sectionTitle}>Tenant Information</Text>
+          <View style={styles.detailRow}>
+            <Text style={styles.label}>Name:</Text>
+            <Text style={styles.value}>
+              {tenant.first_name} {tenant.last_name}
+            </Text>
+          </View>
+          {tenant.email && (
+            <View style={styles.detailRow}>
+              <Text style={styles.label}>Email:</Text>
+              <Text style={styles.value}>{tenant.email}</Text>
+            </View>
+          )}
+          <View style={styles.detailRow}>
+            <Text style={styles.label}>Phone:</Text>
+            <Text style={styles.value}>{tenant.phone}</Text>
+          </View>
+          <Button
+            title="View Tenant Details"
+            onPress={() => navigation.navigate('TenantDetails', { tenantId: tenant.id })}
+            size="small"
+            variant="outline"
+            style={styles.viewTenantButton}
+          />
+        </Card>
+      )}
 
       <Card>
         <Text style={styles.sectionTitle}>Contract Information</Text>
@@ -307,5 +342,8 @@ const styles = StyleSheet.create({
   statusButton: {
     flex: 1,
     minWidth: '45%',
+  },
+  viewTenantButton: {
+    marginTop: 8,
   },
 });

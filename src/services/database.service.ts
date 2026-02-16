@@ -5,6 +5,7 @@ type Tables = Database['public']['Tables'];
 type BuildingInsert = Tables['buildings']['Insert'];
 type RoomInsert = Tables['rooms']['Insert'];
 type LeaseInsert = Tables['leases']['Insert'];
+type TenantInsert = Tables['tenants']['Insert'];
 
 /**
  * Database Service
@@ -322,19 +323,156 @@ export class DatabaseService {
   /**
    * Tenants
    */
-  static async getTenants(clientId: string) {
+  static async getTenants(clientId: string, status?: 'active' | 'inactive' | 'blacklisted') {
     try {
-      const { data, error } = await supabase
+      let query = supabase
         .from('tenants')
         .select('*')
-        .eq('client_id', clientId)
-        .eq('status', 'active')
-        .order('first_name', { ascending: true });
+        .eq('client_id', clientId);
+
+      if (status) {
+        query = query.eq('status', status);
+      }
+
+      const { data, error } = await query.order('first_name', { ascending: true });
 
       if (error) throw error;
       return { data, error: null };
     } catch (error) {
       console.error('Error fetching tenants:', error);
+      return { data: null, error };
+    }
+  }
+
+  static async getTenantById(id: string) {
+    try {
+      const { data, error } = await supabase
+        .from('tenants')
+        .select('*')
+        .eq('id', id)
+        .single();
+
+      if (error) throw error;
+      return { data, error: null };
+    } catch (error) {
+      console.error('Error fetching tenant:', error);
+      return { data: null, error };
+    }
+  }
+
+  static async createTenant(tenant: TenantInsert) {
+    try {
+      const { data, error } = await supabase
+        .from('tenants')
+        .insert(tenant)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return { data, error: null };
+    } catch (error) {
+      console.error('Error creating tenant:', error);
+      return { data: null, error };
+    }
+  }
+
+  static async updateTenant(id: string, updates: Partial<TenantInsert>) {
+    try {
+      const { data, error } = await supabase
+        .from('tenants')
+        .update(updates)
+        .eq('id', id)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return { data, error: null };
+    } catch (error) {
+      console.error('Error updating tenant:', error);
+      return { data: null, error };
+    }
+  }
+
+  static async deleteTenant(id: string) {
+    try {
+      const { error } = await supabase
+        .from('tenants')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+      return { error: null };
+    } catch (error) {
+      console.error('Error deleting tenant:', error);
+      return { error };
+    }
+  }
+
+  /**
+   * Leases (Extended Methods)
+   */
+  static async getLeases(clientId: string) {
+    try {
+      const { data, error } = await supabase
+        .from('leases')
+        .select(`
+          *,
+          tenants (first_name, last_name, email, phone),
+          rooms (room_number, buildings (name))
+        `)
+        .eq('client_id', clientId)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      return { data, error: null };
+    } catch (error) {
+      console.error('Error fetching leases:', error);
+      return { data: null, error };
+    }
+  }
+
+  static async getLeasesByTenant(tenantId: string) {
+    try {
+      const { data, error } = await supabase
+        .from('leases')
+        .select(`
+          *,
+          rooms (room_number, buildings (name))
+        `)
+        .eq('tenant_id', tenantId)
+        .order('start_date', { ascending: false });
+
+      if (error) throw error;
+      return { data, error: null };
+    } catch (error) {
+      console.error('Error fetching tenant leases:', error);
+      return { data: null, error };
+    }
+  }
+
+  static async getExpiringLeases(clientId: string, daysAhead: number = 30) {
+    try {
+      const today = new Date();
+      const futureDate = new Date();
+      futureDate.setDate(today.getDate() + daysAhead);
+
+      const { data, error } = await supabase
+        .from('leases')
+        .select(`
+          *,
+          tenants (first_name, last_name, email, phone),
+          rooms (room_number, buildings (name))
+        `)
+        .eq('client_id', clientId)
+        .eq('status', 'active')
+        .gte('end_date', today.toISOString().split('T')[0])
+        .lte('end_date', futureDate.toISOString().split('T')[0])
+        .order('end_date', { ascending: true });
+
+      if (error) throw error;
+      return { data, error: null };
+    } catch (error) {
+      console.error('Error fetching expiring leases:', error);
       return { data: null, error };
     }
   }
